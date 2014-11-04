@@ -104,10 +104,81 @@
       <ul>
         <li>We'll be drawing a lot of rectangles and circles, so let's make functions</li>
         <li>This also allows the code to look less cluttered</li>
+        <li>All functions for manipulating the canvas will be in the Draw library</li>
+        <li>Library is constructed with "var draw = Draw(canvas);"</li>
+        <li>Library is accessed with "draw.rect(paddle);"</li>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step2.js" target="_blank">step2.js</a>
+          for details</li>
+      </ul>
+      <pre><code class="js">function Draw(canvas) {
+  function rect(r) {
+    context.fillStyle = r.color;
+    context.beginPath();
+    context.rect(r.x, r.y, r.w, r.h);
+    context.fill();
+    context.closePath();
+  }
+
+  return {
+    rect: rect,
+  }
+}
+
+var draw = Draw(canvas);
+
+var paddle = {
+  w: 60,
+  h: 15,
+  y: HEIGHT - 30,
+  color: "white"
+}
+
+draw.rect(paddle)</code></pre>
     </section>
 
     <section class="slide">
-      <pre><code id="step2js" class="js"></code></pre><script>write("../step2.js")</script>
+      <h2>Creating a Library: Demo</h2>
+      <ul>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step2.js" target="_blank">step2.js</a>
+          for details</li>
+      </ul>
+      <iframe src="../step2.html" width="700" height="520"></iframe>
+    </section>
+    <section class="slide">
+      <h2>Make it Bounce!</h2>
+      <ul>
+        <li>Add a speed (dx and dy) to the ball</li>
+        <li>Repeat a "tick()" function "fps" times a second</li>
+        <li>"tick()" should clear, recalculate, and draw</li>
+      </ul>
+      <pre><code class="js">var ball = {
+  r: 10,
+  y: HEIGHT - 45,
+  dx: 150, // speed is in pixels per second
+  dy: -150, // up is negative!
+  color: "white"
+}
+ball.x = WIDTH/2;// arc is already centered!
+
+var fps = 100;
+
+function tick() {
+  draw.clear();
+  ball.x += ball.dx/fps; //(pixels per second)/(frames per second) = pixels per frame
+  ball.y += ball.dy/fps;
+  draw.circle(ball);
+  draw.rect(paddle);
+}
+
+var interval = setInterval(tick,1000/fps);</code></pre>
+    </section>
+    <section class="slide">
+      <h2>Make it Bounce: Demo</h2>
+      <ul>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step3.js" target="_blank">step3.js</a>
+          for details</li>
+      </ul>
+      <iframe src="../step3.html" width="700" height="520"></iframe>
     </section>
     <!-- End slides. -->
 
@@ -138,7 +209,6 @@
   </div>
 
 <!-- Required JS files. -->
-<script src="jquery.min.js"></script>
 <script src="core/deck.core.js"></script>
 
 <!-- Extension JS files. Add or remove as needed. -->

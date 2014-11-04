@@ -43,9 +43,22 @@ paddle.x = WIDTH/2 - paddle.w/2;
 var ball = {
   r: 10,
   y: HEIGHT - 45,
+  dx: 150,
+  dy: -150, // up is negative!
   color: "white"
 }
 ball.x = WIDTH/2;// arc is already centered!
 
-draw.rect(paddle);
-draw.circle(ball);
+var fps = 100;
+
+function tick() {
+  draw.clear();
+  if (ball.x < 0 || ball.x > WIDTH) { ball.dx = -ball.dx }
+  if (ball.y < 0 || ball.y > HEIGHT) { ball.dy = -ball.dy }
+  ball.x += ball.dx/fps;
+  ball.y += ball.dy/fps;
+  draw.circle(ball);
+  draw.rect(paddle);
+}
+
+var interval = setInterval(tick,1000/fps);
