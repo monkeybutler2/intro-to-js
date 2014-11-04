@@ -62,8 +62,6 @@ paddle.x = WIDTH/2 - paddle.w/2;
 var ball = {
   r: 10,
   y: HEIGHT - 45,
-  dx: 150,
-  dy: -150, // up is negative!
   color: "white"
 }
 ball.x = WIDTH/2;// arc is already centered!
@@ -92,10 +90,10 @@ var bricks = createBricks(brick_options);
 
 function collide(ball,brick) {
   var out = { x: false, y: false };
-  var d_left = ball.x - brick.x;
-  var d_right = brick.x + brick.w - ball.x;
-  var d_top = ball.y - brick.y;
-  var d_bot = brick.y + brick.h - ball.y;
+  var d_left = ball.x + ball.r - brick.x;
+  var d_right = brick.x + brick.w - ball.x + ball.r;
+  var d_top = ball.y + ball.r - brick.y;
+  var d_bot = brick.y + brick.h - ball.y + ball.r;
   if (d_left > 0 && d_right > 0 && d_top > 0 && d_bot > 0) {
     if (Math.min(d_left,d_right) > Math.min(d_top,d_bot)) {
       out.y = true;
@@ -107,15 +105,22 @@ function collide(ball,brick) {
   return out;
 }
 
-function tick() {
-  draw.clear();
+function resetBall() {
+  ball.y = HEIGHT - 45;
+  ball.x = WIDTH/2; // arc is already centered! 
+  ball.dx = 150;
+  ball.dy = -150; // up is negative!
+}
+
+function do_collisions() {
   if (ball.x < ball.r || ball.x > WIDTH - ball.r) {
     ball.dx = -ball.dx;
   }
-  if (ball.y < ball.r || ball.y > HEIGHT - ball.r) {
+  if (ball.y < ball.r) {
     ball.dy = -ball.dy;
   }
-
+  if (ball.y > HEIGHT - ball.r) { resetBall(); }
+  
   for (var i=0;i<bricks.length;i++) {
     var _b = bricks[i];
     if (!_b.broken) {
@@ -134,6 +139,11 @@ function tick() {
   if (_c.x || _c.y) {
     ball.dy = - ball.dy;
   }
+}
+
+function tick() {
+  draw.clear();
+  do_collisions()
 
   ball.x += ball.dx/fps;
   ball.y += ball.dy/fps;
@@ -143,9 +153,18 @@ function tick() {
   if (rightDown) {
     paddle.x += paddle.dx/fps;
   }
+
+  for (var i=0;i<bricks.length;i++) {
+    _b = bricks[i];
+    if (!_b.broken) {
+      draw.rect(_b);
+    }
+  }
+
   draw.circle(ball);
   draw.rect(paddle);
 
 }
 
+resetBall();
 var interval = setInterval(tick,1000/fps);

@@ -59,6 +59,7 @@
         <li>Explore the canvas API</li>
         <li>Create basic game loop</li>
         <li>Keyboard interaction</li>
+        <li>Collision Detection</li>
         <li>Extra Credit</li>
       </ul>
     </section>
@@ -92,11 +93,14 @@
         </li>
         <li>Colors are expressed as html colors (hex codes or names)</li>
         <li>Canvas is accessed through canvas.getContext("2d")</li>
+        <li>The context API allows manipulation</li>
+        <li>All we will use today is rect, arc, and clearRect</li>
       </ul>
     </section>
+
     <section class="slide">
-      <pre><code id="step1js" class="js"></code></pre><script>write("../step1.js")</script>
-      <iframe src="../step1.html" width="700" height="520"></iframe>
+      <pre><code id="step1js" class="js"></code></pre><script>write("step1.js")</script>
+      <iframe src="step1.html" width="700" height="520"></iframe>
     </section>
 
     <section class="slide">
@@ -108,7 +112,7 @@
         <li>Library is constructed with "var draw = Draw(canvas);"</li>
         <li>Library is accessed with "draw.rect(paddle);"</li>
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step2.js" target="_blank">step2.js</a>
-          for details</li>
+          for full code</li>
       </ul>
       <pre><code class="js">function Draw(canvas) {
   function rect(r) {
@@ -140,9 +144,9 @@ draw.rect(paddle)</code></pre>
       <h2>Creating a Library: Demo</h2>
       <ul>
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step2.js" target="_blank">step2.js</a>
-          for details</li>
+          for full code</li>
       </ul>
-      <iframe src="../step2.html" width="700" height="520"></iframe>
+      <iframe src="step2.html" width="700" height="520"></iframe>
     </section>
     <section class="slide">
       <h2>Make it Bounce!</h2>
@@ -179,9 +183,9 @@ var interval = setInterval(tick,1000/fps);</code></pre>
       <h2>Make it Bounce: Demo</h2>
       <ul>
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step3.js" target="_blank">step3.js</a>
-          for details</li>
+          for full code</li>
       </ul>
-      <iframe src="../step3.html" width="700" height="520"></iframe>
+      <iframe src="step3.html" width="700" height="520"></iframe>
     </section>
 
     <section class="slide">
@@ -191,7 +195,7 @@ var interval = setInterval(tick,1000/fps);</code></pre>
         <li>"event_function" receives an argument, event, which give you details on what the event is.</li>
         <li>Store which keys are down in variables.</li>
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step4.js" target="_blank">step4.js</a>
-          for details</li>
+          for full code</li>
       </ul>
       <pre><code class="js">//set rightDown or leftDown if the right or left keys are down
 function onKeyDown(event) {
@@ -225,9 +229,9 @@ paddle.dx = 200;
       <h2>Keyboard input: Demo</h2>
       <ul>
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step4.js" target="_blank">step4.js</a>
-          for details</li>
+          for full code</li>
       </ul>
-      <iframe src="../step4.html" width="700" height="520"></iframe>
+      <iframe src="step4.html" width="700" height="520"></iframe>
     </section>
 
     <section class="slide">
@@ -237,7 +241,7 @@ paddle.dx = 200;
         <li>Each brick needs a width, height, x, y, color, and a boolean to tell if it's broken or not.</li>
         <li>We need two forloops, one for the rows and one for the columns</li>
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step5.js" target="_blank">step5.js</a>
-          for details</li>
+          for full code</li>
       </ul>
       <pre><code class="js">function createBricks(o) {
   var out = [], x, y, col_max, color;
@@ -268,14 +272,97 @@ var bricks = createBricks(brick_options);
     }
   }</code></pre>
     </section>
+
     <section class="slide">
       <h2>Creating the bricks</h2>
       <ul>
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step5.js" target="_blank">step5.js</a>
-          for details</li>
+          for full code</li>
       </ul>
-      <iframe src="../step5.html" width="700" height="520"></iframe>
+      <iframe src="step5.html" width="700" height="520"></iframe>
     </section>
+
+    <section class="slide">
+      <h2>Collision Detection</h2>
+      <ul>
+        <li>Cycle through all the bricks</li>
+        <li>Check to see if ball is colliding</li>
+        <li>If so, mark brick as broken and bounce ball</li>
+        <li>Check to see if the ball collided with the paddle, if so bounce</li>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step6.js" target="_blank">step6.js</a>
+          for full code</li>
+      </ul>
+      <pre><code class="js">function collide(ball,brick) {
+  var out = { x: false, y: false };
+  var d_left = ball.x - brick.x;
+  var d_right = brick.x + brick.w - ball.x;
+  var d_top = ball.y - brick.y;
+  var d_bot = brick.y + brick.h - ball.y;
+  if (d_left > 0 && d_right > 0 && d_top > 0 && d_bot > 0) {
+    if (Math.min(d_left,d_right) > Math.min(d_top,d_bot)) {
+      out.y = true;
+    }
+    else {
+      out.x = true;
+    }
+  }
+  return out;
+}
+
+// inside tick()
+  for (var i=0;i&lt;bricks.length;i++) {
+    var _b = bricks[i];
+    if (!_b.broken) {
+      var _c = collide(ball,_b);
+      if (_c.x || _c.y) {
+        _b.broken = true;
+        if (_c.x) { ball.dx = -ball.dx }
+        if (_c.y) { ball.dy = -ball.dy }
+        continue;
+      }
+      draw.rect(_b);
+    }
+  }
+  
+  _c = collide(ball,paddle);
+  if (_c.x || _c.y) {
+    ball.dy = - ball.dy;
+  }
+    </section>
+
+    <section class="slide">
+      <h2>Collision Detection: Demo</h2>
+      <ul>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step6.js" target="_blank">step6.js</a>
+          for full code</li>
+      </ul>
+      <iframe src="step6.html" width="700" height="520"></iframe>
+    </section>
+
+    <section class="slide">
+      <h2>Cleanup</h2>
+      <ul>
+        <li>Create function "resetBall", use it at the start of the game and if the ball goes below screen</li>
+        <li>Right now the ball bounces from the middle of the ball, make it bounce from the edges.</li>
+        <li>Rearrange all the collisions into a "doCollisions" function to make the code readable</li>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step7.js" target="_blank">step7.js</a>
+          for full code</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h2>Extra Credit</h2>
+      <ul>
+        <li>Right now the game is very deterministic. We need to make it interesting</li>
+        <li>Make the ball speed up with every collision</li>
+        <li>Make the ball speed up or slow down depending on whether or not the paddle is moving when you hit the ball.</li>
+        <li>Change the angle of the ball depending on which side of the paddle you hit.</li>
+        <li>Make bricks take multiple hits. Maybe change their color to white to show that they have one hit left</li>
+        <li>Reset the game after the bricks have been 
+      </ul>
+    </section>
+
+
     <!-- End slides. -->
 
     <!-- Begin extension snippets. Add or remove as needed. -->
