@@ -81,15 +81,20 @@ function collide(ball,bricks,paddle,canvas) {
   bounds = getBounds(paddle,ball.r);
   if (ball.x > bounds.l && ball.x < bounds.r && ball.y > bounds.t && ball.y < bounds.b) {
     ball.dy = -Math.abs(ball.dy);
+    //if (ball.x - bounds.l > bounds.r - ball.x) { ball.dx = Math.abs(ball.dx) }
+    //else { ball.dx = - Math.abs(ball.dx) }
+    if (leftDown) { ball.dx -=1; }
+    if (rightDown) { ball.dx +=1; }
   }
   for (var i=0;i<bricks.length;i++) {
     var b = bricks[i];
     if (b.broken) { continue; }
     bounds = getBounds(b,ball.r);
+    // direction decision needs work
     if (ball.x > bounds.l && ball.x < bounds.r && ball.y > bounds.t && ball.y < bounds.b) {
-      var dxl = ball.x-bounds.l;
-      var dxr = bounds.r+ball.x;
-      if (dxl < ball.r || dxr < ball.r) { ball.dx = -ball.dx; }
+      var x_distance = Math.min(ball.x-bounds.l, bounds.r-ball.x);
+      var y_distance = Math.min(ball.y-bounds.t, bounds.b-ball.y);
+      if (x_distance < y_distance) { ball.dx = -ball.dx; }
       else { ball.dy = -ball.dy; }
       b.broken = true;
     }
