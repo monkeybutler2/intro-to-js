@@ -70,6 +70,43 @@ ball.x = WIDTH/2;// arc is already centered!
 
 var fps = 100;
 
+function createBricks(o) {
+  var out = [], x, y, col_max, color;
+  var colors = ["red","green","blue","yellow"];
+  for (var row=0; row<o.rows; row++) {
+    col_max = Math.floor(o.canvas.width / (o.w+o.s));
+    if (row%2 == 0) { col_max -=1; }
+    y = (row+3)*(o.h + o.s) + o.s;
+    for (var col=0; col<col_max; col++) {
+      x = col*(o.s + o.w) + o.s;
+      if (row%2 == 0) { x += o.w/2; }
+      color = colors[Math.floor((row+col)%colors.length)];
+      out.push({x: x, y: y, w: o.w, h: o.h, color: color, broken: false});
+    }
+  }
+  return out;
+}
+
+var brick_options = {w: 40, h: 15, s: 5, canvas: canvas, rows: 4};
+var bricks = createBricks(brick_options);
+
+function collide(ball,brick) {
+  var out = { x: false, y: false };
+  var d_left = ball.x - brick.x;
+  var d_right = brick.x + brick.w - ball.x;
+  var d_top = ball.y - brick.y;
+  var d_bot = brick.y + brick.h - ball.y;
+  if (d_left > 0 && d_right > 0 && d_top > 0 && d_bot > 0) {
+    if (Math.min(d_left,d_right) > Math.min(d_top,d_bot)) {
+      out.y = true;
+    }
+    else {
+      out.x = true;
+    }
+  }
+  return out;
+}
+
 function tick() {
   draw.clear();
   if (ball.x < ball.r || ball.x > WIDTH - ball.r) {
@@ -88,6 +125,25 @@ function tick() {
   }
   draw.circle(ball);
   draw.rect(paddle);
+
+  for (var i=0;i<bricks.length;i++) {
+    var _b = bricks[i];
+    if (!_b.broken) {
+      var _c = collide(ball,_b);
+      if (_c.x || _c.y) {
+        _b.broken = true;
+        if (_c.x) { ball.dx = -ball.dx }
+        if (_c.y) { ball.dy = -ball.dy }
+        continue;
+      }
+      draw.rect(_b);
+    }
+  }
+
+  _c = collide(ball,paddle);
+  if (_c.x || _c.y) {
+    ball.dy = - ball.dy;
+  }
 }
 
 var interval = setInterval(tick,1000/fps);
