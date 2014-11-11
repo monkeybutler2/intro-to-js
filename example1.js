@@ -49,39 +49,46 @@ function resetBall() {
 
 function do_collisions() {
   if (ball.x < ball.r) {
-    ball.dx = -Math.abs(ball.dx);
+    ball.dx = Math.abs(ball.dx);
   }
   if (ball.x > WIDTH - ball.r) {
-    ball.dx = Math.abs(ball.dx) 
-  } 
+    ball.dx = -Math.abs(ball.dx);
+  }
   if (ball.y < ball.r) {
-    ball.dy = -Math.abs(ball.dy);
+    ball.dy = Math.abs(ball.dy);
   }
   if (ball.y > HEIGHT - ball.r) {
-    ball.dy = Math.abs(ball.dy);
+    ball.dy = -Math.abs(ball.dy);
   }
 }
 
-var start = new Date().valueOf();
+var start_time = new Date().valueOf();
 var frames = 0;
 
 function tick() {
   draw.clear();
   do_collisions()
 
+  var now = new Date().valueOf();
   ball.x += ball.dx/fps;
   ball.y += ball.dy/fps;
   frames += 1;
-  var now = new Date().valueOf();
-  var time = (now-start)/1000;
+
+  var time = (now-start_time)/1000;
   document.getElementById('frames').innerHTML = frames+" frames";
   document.getElementById('fps').innerHTML = Math.round(frames/time)+" fps";
   document.getElementById('mspf').innerHTML = Math.round(100*1000*time/frames)/100+" milliseconds per frame";
   draw.circle(ball);
   // adjust max value of i to slow this down
-  for (var i=0;i<10000000;i++) { Math.sqrt(2) }
-  if (time > 20) {clearInterval(interval) }
+  for (var i=0;i<10000000;i++) { Math.sqrt(1/2) }
 }
 
 resetBall();
-var interval = setInterval(tick,1000/fps);
+
+var interval;
+function stop() {
+  clearInterval(interval);
+}
+function start() {
+  interval = setInterval(tick,1000/fps);
+}

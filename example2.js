@@ -49,20 +49,20 @@ function resetBall() {
 
 function do_collisions() {
   if (ball.x < ball.r) {
-    ball.dx = -Math.abs(ball.dx);
+    ball.dx = Math.abs(ball.dx);
   }
   if (ball.x > WIDTH - ball.r) {
-    ball.dx = Math.abs(ball.dx)
+    ball.dx = -Math.abs(ball.dx);
   }
   if (ball.y < ball.r) {
-    ball.dy = -Math.abs(ball.dy);
+    ball.dy = Math.abs(ball.dy);
   }
   if (ball.y > HEIGHT - ball.r) {
-    ball.dy = Math.abs(ball.dy);
+    ball.dy = -Math.abs(ball.dy);
   }
 }
 
-var start = new Date().valueOf();
+var start_time = new Date().valueOf();
 var last_time = new Date().valueOf();
 var frames = 0;
 
@@ -71,20 +71,27 @@ function tick() {
   do_collisions()
 
   var now = new Date().valueOf();
-  var elapsed_time = last_time - now;
+  var elapsed_time = (now - last_time)/1000;
   last_time = now;
-  ball.x += ball.dx*elapsed_time/1000;
-  ball.y += ball.dy*elapsed_time/1000;
+  ball.x += ball.dx*elapsed_time;
+  ball.y += ball.dy*elapsed_time;
   frames += 1;
 
-  var time = (now-start)/1000;
+  var time = (now-start_time)/1000;
   document.getElementById('frames').innerHTML = frames+" frames";
   document.getElementById('fps').innerHTML = Math.round(frames/time)+" fps";
   document.getElementById('mspf').innerHTML = Math.round(100*1000*time/frames)/100+" milliseconds per frame";
   draw.circle(ball);
   // adjust max value of i to slow this down
-  for (var i=0;i<10000000;i++) { Math.sqrt(2) }
+  for (var i=0;i<10000000;i++) { Math.sqrt(1/2) }
 }
 
 resetBall();
-var interval = setInterval(tick,1000/fps);
+
+var interval;
+function stop() {
+  clearInterval(interval);
+}
+function start() {
+  interval = setInterval(tick,1000/fps);
+}

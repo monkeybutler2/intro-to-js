@@ -8,27 +8,27 @@
   <title>Intro to JS: Game Development</title>
 
   <!-- Required stylesheet -->
-  <link rel="stylesheet" media="screen" href="core/deck.core.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/core/deck.core.css">
 
   <!-- Extension CSS files go here. Remove or add as needed. -->
-  <link rel="stylesheet" media="screen" href="extensions/goto/deck.goto.css">
-  <link rel="stylesheet" media="screen" href="extensions/menu/deck.menu.css">
-  <link rel="stylesheet" media="screen" href="extensions/navigation/deck.navigation.css">
-  <link rel="stylesheet" media="screen" href="extensions/status/deck.status.css">
-  <link rel="stylesheet" media="screen" href="extensions/scale/deck.scale.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/extensions/goto/deck.goto.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/extensions/menu/deck.menu.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/extensions/navigation/deck.navigation.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/extensions/status/deck.status.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/extensions/scale/deck.scale.css">
 
   <!-- Style theme. More available in /themes/style/ or create your own. -->
-  <link rel="stylesheet" media="screen" href="themes/style/swiss.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/themes/style/swiss.css">
 
   <!-- Transition theme. More available in /themes/transition/ or create your own. -->
-  <link rel="stylesheet" media="screen" href="themes/transition/horizontal-slide.css">
+  <link rel="stylesheet" media="screen" href="slide_resources/themes/transition/horizontal-slide.css">
 
   <!-- Basic black and white print styles -->
-  <link rel="stylesheet" media="print" href="core/print.css">
+  <link rel="stylesheet" media="print" href="slide_resources/core/print.css">
 
   <!-- Required Modernizr file -->
-  <script src="modernizr.custom.js"></script>
-  <script src="jquery.min.js"></script>
+  <script src="slide_resources/modernizr.custom.js"></script>
+  <script src="slide_resources/jquery.min.js"></script>
 <style>pre { width: 100%; }</style>
 </head>
 <body>
@@ -45,7 +45,8 @@
         <li>window.requestAnimationFrame(func)</li>
         <li>Making graphics with sprites</li>
         <li>HTML elements</li>
-        <li>A taste of Javascript OOP<br/><br/></li>
+        <li>More User Interactions</li>
+        <li>HTML 5 Sound<br/><br/></li>
         <li>Day 1 notes <a href=".">here</a></li>
         <li>All files available on <a href="https://github.com/chriscauley/intro-to-js/">this project's Github Page</a>
       </ul>
@@ -70,9 +71,7 @@
       <pre><code class="js">// inside tick()
   ball.x += ball.dx/fps;
   ball.y += ball.dy/fps;
-  frames += 1;
-  var now = new Date().valueOf();
-  var time = (now-start)/1000;
+
   draw.circle(ball);
   // adjust max value of i to slow this down
   for (var i=0;i&lt;10000000;i++) { Math.sqrt(2) }</code></pre>
@@ -175,23 +174,70 @@ function start() {
     <section class="slide">
       <h3>Sprites</h3>
       <ul>
-        <li></li>
-        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step8.js" target="_blank">step8.js</a>
+        <li>Use an image with all the images for the game</li>
+        <li>Cut out sprites and paste on the image</li>
+        <li>
+          Here's a sprite map I made:<br />
+          <img src="brick_sprites.png" />
+        </li>
+        <li>Each sprite is 8 wide and 16 high</li>
+        <li>Sprites drawn with context.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh)</li>
+        <li>s =&lt; source (image)</li>
+        <li>d =&lt; destination (canvas)</li>
+        <li>Some values are optional
+          (see <a href="http://diveintohtml5.info/canvas.html#images" target="_blank">Dive Into HTML5</a>)</li>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step9.js" target="_blank">step9.js</a>
           for full code</li>
       </ul>
-      <pre><code class="js"></code></pre>
-      <iframe src="step8.html" width="700" height="600"></iframe>
+    </section>
+
+    <section class="slide">
+      <h3>Sprites: Code</h3>
+      <pre><code class="js">// new function Draw().brick(b);
+  var brick_sprites = document.createElement("img");
+  brick_sprites.src = "brick_sprites.png";
+  function brick(b) {
+    context.drawImage(brick_sprites,b.sx,b.sy,b.sw,b.sh,b.x,b.y,b.w,b.h);
+  }
+
+//modified createBricks
+function createBricks(o) {
+  var out = [], x, y, col_max, color;
+  var sw = 16;
+  var sh = 8;
+  var sprite_rows = [0,1,2,3,4,5,6,7];
+  for (var row=0; row&lt;o.rows; row++) {
+    col_max = Math.floor(o.canvas.width / (o.w+o.s));
+    if (row%2 == 0) { col_max -=1; }
+    y = (row+3)*(o.h + o.s) + o.s;
+    for (var col=0; col&lt;col_max; col++) {
+      x = col*(o.s + o.w) + o.s;
+      if (row%2 == 0) { x += o.w/2; }
+      var sprite_row = sprite_rows[Math.floor((row+col)%sprite_rows.length)];
+      sprite_col = Math.floor(Math.random()*5);
+      var brick = {
+        sx: sprite_col*sw,
+        sy: sprite_row*sh,
+        sw: sw,
+        sh: sh,
+        x: x, y: y, w: o.w, h: o.h, broken: false //old options
+      };
+      out.push(brick);
+    }
+  }
+  return out;
+}</code></pre>
     </section>
 
     <section class="slide">
       <h3>requestAnimationFrame(function)</h3>
       <ul>
         <li></li>
-        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step8.js" target="_blank">step8.js</a>
+        <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/step9.js" target="_blank">step9.js</a>
           for full code</li>
       </ul>
       <pre><code class="js"></code></pre>
-      <iframe src="step8.html" width="700" height="600"></iframe>
+      <iframe src="step9.html" width="700" height="600"></iframe>
     </section>
 
     <!-- End slides. -->
@@ -223,14 +269,14 @@ function start() {
   </div>
 
 <!-- Required JS files. -->
-<script src="core/deck.core.js"></script>
+<script src="slide_resources/core/deck.core.js"></script>
 
 <!-- Extension JS files. Add or remove as needed. -->
-<script src="extensions/menu/deck.menu.js"></script>
-<script src="extensions/goto/deck.goto.js"></script>
-<script src="extensions/status/deck.status.js"></script>
-<script src="extensions/navigation/deck.navigation.js"></script>
-<script src="extensions/scale/deck.scale.js"></script>
+<script src="slide_resources/extensions/menu/deck.menu.js"></script>
+<script src="slide_resources/extensions/goto/deck.goto.js"></script>
+<script src="slide_resources/extensions/status/deck.status.js"></script>
+<script src="slide_resources/extensions/navigation/deck.navigation.js"></script>
+<script src="slide_resources/extensions/scale/deck.scale.js"></script>
 
 <!-- Initialize the deck. You can put this in an external file if desired. -->
 <script>
