@@ -144,7 +144,6 @@ function do_collisions() {
   }
 }
 
-var last_time = new Date().valueOf();
 function tick() {
   draw.clear();
   do_collisions()
@@ -174,13 +173,13 @@ function tick() {
   current_frame = requestAnimationFrame(tick);
 }
 
+var last_time;
 function stop() {
-  cancelAnimationFrame(current_frame);
+  clearInterval(interval);
 }
-
 function start() {
-  var current_frame = requestAnimationFrame(tick);
+  last_time = new Date().valueOf();
+  interval = setInterval(tick,1000/fps);
 }
-
 resetBall();
 

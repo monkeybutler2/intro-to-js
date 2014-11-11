@@ -62,7 +62,6 @@ function do_collisions() {
   }
 }
 
-var start_time = new Date().valueOf();
 var frames = 0;
 
 function tick() {
@@ -86,9 +85,11 @@ function tick() {
 resetBall();
 
 var interval;
+var start_time;
 function stop() {
   clearInterval(interval);
 }
 function start() {
+  start_time = new Date().valueOf();
   interval = setInterval(tick,1000/fps);
 }

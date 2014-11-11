@@ -54,7 +54,44 @@ function Draw(canvas) {
   }
 }
 
+function Sound(src,repeat) {
+  var elements = [];
+  for (var i=0;i<repeat;i++) {
+    var audio = document.createElement("audio");
+    var mp3 = document.createElement("source");
+    mp3.src = src + ".mp3";
+    audio.appendChild(mp3);
+    var wav = document.createElement("source");
+    wav.src = src + ".wav";
+    audio.appendChild(wav);
+    elements.push(audio);
+  }
+  var last_played = 0;
+  function play() {
+    last_played +=1;
+    if (last_played == repeat) {
+      last_played = 0;
+    }
+    elements[last_played].play();
+  }
+  function stop() {
+    elements[last_played].stop();
+  }
+  function set_volume(level) {
+    for (var i=0;i<elements.length;i++) {
+      elements[i].volume=level;
+    }
+  }
+  return {
+    play: play,
+    stop: stop,
+    set_volume: set_volume
+  }
+}
+
 var draw = Draw(canvas);
+var beep = new Sound("beep",8);
+beep.set_volume(0.5);
 
 var paddle = {
   w: 60,
@@ -151,6 +188,7 @@ function do_collisions() {
       var _c = collide(ball,_b);
       if (_c.x || _c.y) {
         _b.broken = true;
+        beep.play();
         if (_c.x) { ball.dx = -ball.dx }
         if (_c.y) { ball.dy = -ball.dy }
         continue;
@@ -199,14 +237,36 @@ function onMouseMove(event) {
 //canvas.addEventListener("onmousemove",onMouseMove);
 canvas.onmousemove = onMouseMove;
 
+function tilt(bg) {
+  var max_angle = 60;
+  var angle = bg[1]+max_angle/2;
+  paddle.x = angle/max_angle*WIDTH;
+  paddle.x = Math.min(paddle.x,WIDTH - paddle.w);
+  paddle.x = Math.max(paddle.x,0);
+}
+
+if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", function () {
+        tilt([event.beta, event.gamma]);
+    }, true);
+} else if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', function () {
+        tilt([event.acceleration.x * 2, event.acceleration.y * 2]);
+    }, true);
+} else {
+    window.addEventListener("MozOrientation", function () {
+        tilt([orientation.x * 50, orientation.y * 50]);
+    }, true);
+}
+
 function stop() {
   cancelAnimationFrame(current_frame);
 }
 
 var last_time;
 function start() {
-  var current_frame = requestAnimationFrame(tick);
   last_time = new Date().valueOf();
+  var current_frame = requestAnimationFrame(tick);
 }
 
 resetBall();

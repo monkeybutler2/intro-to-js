@@ -199,14 +199,36 @@ function onMouseMove(event) {
 //canvas.addEventListener("onmousemove",onMouseMove);
 canvas.onmousemove = onMouseMove;
 
+function tilt(bg) {
+  var max_angle = 60;
+  var angle = bg[1]+max_angle/2;
+  paddle.x = angle/max_angle*WIDTH;
+  paddle.x = Math.min(paddle.x,WIDTH - paddle.w);
+  paddle.x = Math.max(paddle.x,0);
+}
+
+if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", function () {
+        tilt([event.beta, event.gamma]);
+    }, true);
+} else if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', function () {
+        tilt([event.acceleration.x * 2, event.acceleration.y * 2]);
+    }, true);
+} else {
+    window.addEventListener("MozOrientation", function () {
+        tilt([orientation.x * 50, orientation.y * 50]);
+    }, true);
+}
+
 function stop() {
   cancelAnimationFrame(current_frame);
 }
 
 var last_time;
 function start() {
-  var current_frame = requestAnimationFrame(tick);
   last_time = new Date().valueOf();
+  var current_frame = requestAnimationFrame(tick);
 }
 
 resetBall();
