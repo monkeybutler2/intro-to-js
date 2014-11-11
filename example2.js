@@ -48,11 +48,17 @@ function resetBall() {
 }
 
 function do_collisions() {
-  if (ball.x < ball.r || ball.x > WIDTH - ball.r) {
-    ball.dx = -ball.dx;
+  if (ball.x < ball.r) {
+    ball.dx = -Math.abs(ball.dx);
   }
-  if (ball.y < ball.r || ball.y > HEIGHT - ball.r) {
-    ball.dy = -ball.dy;
+  if (ball.x > WIDTH - ball.r) {
+    ball.dx = Math.abs(ball.dx)
+  }
+  if (ball.y < ball.r) {
+    ball.dy = -Math.abs(ball.dy);
+  }
+  if (ball.y > HEIGHT - ball.r) {
+    ball.dy = Math.abs(ball.dy);
   }
 }
 

@@ -113,11 +113,14 @@ function resetBall() {
 }
 
 function do_collisions() {
-  if (ball.x < ball.r || ball.x > WIDTH - ball.r) {
-    ball.dx = -ball.dx;
+  if (ball.x < ball.r) {
+    ball.dx = Math.abs(ball.dx);
   }
+  if (ball.x > WIDTH - ball.r) {
+    ball.dx = -Math.abs(ball.dx) 
+  } 
   if (ball.y < ball.r) {
-    ball.dy = -ball.dy;
+    ball.dy = Math.abs(ball.dy);
   }
   if (ball.y > HEIGHT - ball.r) { resetBall(); }
   
@@ -137,7 +140,7 @@ function do_collisions() {
 
   _c = collide(ball,paddle);
   if (_c.x || _c.y) {
-    ball.dy = - ball.dy;
+    ball.dy = -Math.abs(ball.dy);
   }
 }
 
