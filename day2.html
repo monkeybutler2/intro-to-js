@@ -87,16 +87,15 @@
         <li>View <a href="https://github.com/chriscauley/intro-to-js/blob/master/example2.js" target="_blank">example2.js</a>
           for full code</li>
       </ul>
-      <pre><code class="js">var start = new Date().valueOf();
+      <pre><code class="js">// this line would be better some where else, why?
 var last_time = new Date().valueOf();
-var frames = 0;
 
 function tick() {
   draw.clear();
   do_collisions()
 
   var now = new Date().valueOf();
-  var elapsed_time = last_time - now;
+  var elapsed_time = (last_time - now)/1000;
   last_time = now;
   ball.x += ball.dx*elapsed_time/1000;
   ball.y += ball.dy*elapsed_time/1000;
@@ -108,19 +107,18 @@ function tick() {
 
     <section class="slide">
       <h3>Timing based on last_time (demo)</h3>
-      <pre><code class="js">var start = new Date().valueOf();
+      <pre><code class="js">// this line would be better some where else, why?
 var last_time = new Date().valueOf();
-var frames = 0;
 
 function tick() {
   draw.clear();
   do_collisions()
 
   var now = new Date().valueOf();
-  var elapsed_time = last_time - now;
+  var elapsed_time = (last_time - now)/1000;
   last_time = now;
-  ball.x += ball.dx*elapsed_time/1000;
-  ball.y += ball.dy*elapsed_time/1000;
+  ball.x += ball.dx*elapsed_time;
+  ball.y += ball.dy*elapsed_time;
   
   // adjust max value of i to slow this down
   for (var i=0;i&lt;10000000;i++) { Math.sqrt(2) }
@@ -312,12 +310,36 @@ beep.set_volume(0.5);</code></pre>
       <ul>
         <li>Go to <a href="http://github.com/">github.com</a></li>
         <li>Create an account or sign in</li>
-        <li>Create a new repository called <i><b>username</b></i>.github.com</li>
+        <li>Create a new repository called breakout, or whatever</li>
         <li>Be sure to initialize with an empty README</li>
+        <li>Click the dropdown where it says "branch:master" and type "gh-pages" then hit enter</li>
         <li>Create a file (the plus button above the file listing), call it index.html</li>
         <li>Copy your latest stepX.html content and save it</li>
         <li>Do the same for the javascript file (whatever you call it)</li>
-        <li>Wait about 10 minutes and go to <i><b>username</b></i>.github.com</li>
+        <li>Wait about 10 minutes and go to <i><b>username</b></i>.github.com/breakout/</li>
+      </ul>
+    </section>
+
+    <section class="slide">
+      <h3>Thanks for taking this class!</h3>
+      <ul>
+        <li>Update your github with any more changes and email me the link</li>
+        <li>Come show off at our next Recreational Computer Programming meetup</li>
+      </ul>
+      <h3>What now?</h3>
+      <ul>
+        <li>
+          The code is still pretty disorganized. I'd move it into these functions:
+          <ol>
+            <li>init() - A function that holds everything that needs to happen once before the game starts</li>
+            <li>startLevel(level_options) - creates a new level and plays it</li>
+            <li>gameOver - Display an end of game screen and a button to restart the game</li>
+          </ol>
+        </li>
+        <li>If all that is smooth you should be ready to make new levels
+          <br />(hint, when all the bricks are done run startLevel(second_level_options)</li>
+        <li>Add power-ups and a scoring system</li>
+        <li>Add bricks that don't break, bricks that break from a certain angle, etc.</li>
       </ul>
     </section>
 
